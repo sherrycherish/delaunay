@@ -1,4 +1,4 @@
-// forked from akm2's "エッジ検出のテスト" http://jsdo.it/akm2/89lF
+
 (function(window, document) {
 
     'use strict';
@@ -9,17 +9,17 @@
 
     // Configs
 
-	   // (int) 0~255 明るさの平均からエッジを検出する際の最小値を示す, この明るさを超えるピクセルを検出する, 少ないほど詳細
+	   // (int) 0~255 在检测来自所述平均亮度的边缘的最小值，检测超过所述亮度的像素，因此小细节
     api.EDGE_DETECT_VALUE = 80; //50
-    // (number) エッジ上のポイントの分布比率, 高いほど詳細, 生成されたポイント数はコンソールを参照
+    // (number) 在边缘点的分布比例，高于在参考生成到控制台的更多数量的点
     api.POINT_RATE = 0.075; //0.075
-    // (int) ポイントの最大数, POINT_RATE によるポイント数はこの値を超えない, 大きいほど詳細
+    // (int) 点的最大数量，点的数量不超过由POINT_RATE此值时，足够大的细节
     api.POINT_MAX_NUM = 4500; //2500
-    // (int) 細かいエッジを消すために行うほかしのサイズ, 少ないほど詳細
+    // (int) 除了牙齿大小做删除的精细边缘，这样的小细节
     api.BLUR_SIZE = 2; //2
-    // (int) エッジ検出のサイズ, 大きいほど詳細
+    // (int) 边缘检测的大小，足够大的细节
     api.EDGE_SIZE = 6; //3
-    // (int) 許容ピクセル数, このピクセル数を超える画像が指定された場合リサイズする
+    // (int) 当指定了超过此数量的像素更形象，调整允许的像素数
     api.PIXEL_LIMIT = 8000000; //360000
 
     // Set the values for each input to the default
@@ -37,7 +37,7 @@
 
     regenerateForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        
+
         var message = document.getElementById('message');
         message.innerHTML = GENERATIONG_MESSAGE;
 
@@ -53,9 +53,9 @@
         api.regenerate();
     }, false);
 
-    var GENERAL_MESSAGE = 'Drop image to change source.'; // 通常の表示メッセージ
+    var GENERAL_MESSAGE = 'Drop image to change source.'; // 正常显示信息
     var GENERATIONG_MESSAGE = 'Generating...'; // 生成中の表示メッセージ
-    var IMG_PRESETS = [ // プリセットイメージ
+    var IMG_PRESETS = [ // 预设图像
         // insert a list of image files here, users can click these to cycle through them
         'lilac-breasted_roller.jpg',
         'apple.jpg'
@@ -68,15 +68,15 @@
 
     var image, source;
     var canvas, context;
-    var imageIndex = IMG_PRESETS.length * Math.random() | 0; // 現在のプリセットのインデックス
-    var message; // メッセージ表示用要素
-    var generating = true; // 生成中であることを示す
-    var timeoutId = null; // 非同期処理用
+    var imageIndex = IMG_PRESETS.length * Math.random() | 0; // 当前预设的索引
+    var message; // 信息显示元素
+    var generating = true; // 这表明正在生成它
+    var timeoutId = null; // 对于异步处理
 
-    // ログ表示用
+    // 对于显示日志
     var generateTime = 0;
 
-    // プリセットイメージをシャッフル
+    // 洗牌预设图像
     var imagePresets = (function(presets) {
         presets = presets.slice();
         var i = presets.length, j, t;
@@ -89,7 +89,7 @@
         return presets;
     })(IMG_PRESETS);
 
-    // ほかし用コンボリューション行列を作成
+    //创建其他和卷积矩阵
     var blur = (function(size) {
         var matrix = [];
         var side = size * 2 + 1;
@@ -98,7 +98,7 @@
         return matrix;
     })(api.BLUR_SIZE);
 
-    // エッジ検出用コンボリューション行列を作成
+    // 创建的边缘检测卷积矩阵
     var edge = (function(size) {
         var matrix = [];
         var side = size * 2 + 1;
@@ -142,7 +142,7 @@
     function documentClick(e) {
         if (generating) return; // 生成中なら抜ける
 
-        // 次のプリセット画像を指定してソースを設定
+        // 通过指定以下预设图像设置源
         imageIndex = (imageIndex + 1) % imagePresets.length;
         setSource(imagePresets[imageIndex]);
     }
@@ -160,7 +160,7 @@
             return;
         }
 
-        // ドロップされた画像ファイルを指定してソースを設定
+        // 将源设置为指定一个下降的图像文件
         var reader = new FileReader();
         reader.addEventListener('load', function(e) {
             setSource(e.target.result);
@@ -174,12 +174,12 @@
      * @see setSource()
      */
     function sourceLoadComplete(e) {
-        // 画像サイズのチェック
+        // 检查图像大小
         var width  = source.width;
         var height = source.height;
         var pixelNum = width * height;
         if (pixelNum > api.PIXEL_LIMIT) {
-            // サイズオーバーの場合はリサイズ
+            // 调整大小对案件
             var scale = Math.sqrt(api.PIXEL_LIMIT / pixelNum);
             source.width  = width * scale | 0;
             source.height = height * scale | 0;
@@ -198,8 +198,8 @@
     api.regenerate = sourceLoadComplete;
 
     /**
-     * 画像のサイズと位置を調整する
-     * image の load, window の resize イベントハンドラ
+     * 调整图像的大小和位置
+     * image の load, window の resize 事件处理
      */
     function adjustImage() {
         image.removeAttribute('width');
@@ -218,32 +218,32 @@
     }
 
     /**
-     * ソースを設定する
+     * 设置源
      *
      * @param {String} URL or data
      */
     function setSource(src) {
-        // 生成中であることを示す
+        // 这表明正在生成它
         generating = true;
         message.innerHTML = GENERATIONG_MESSAGE;
 
         if (source.src !== src) {
-            // サイズを初期化
+            // 初始化大小
             source.removeAttribute('width');
             source.removeAttribute('height');
             source.src = src;
         } else {
-            // 画像が同じ場合はイベントハンドラを強制的に実行
+            // 被迫运行的事件处理程序，如果图像是相同的
             sourceLoadComplete(null);
         }
     }
 
 
     /**
-     * 画像を生成する
+     * 安排图像生成
      */
     function generate() {
-        // 画像とキャンバスのサイズを設定して取得し, 検出を開始
+        // 你到设置图像的尺寸和画布，检测的开始
         var width  = canvas.width = source.width;
         var height = canvas.height = source.height;
 
@@ -251,17 +251,17 @@
 
         // 処理用 ImageData
         var imageData = context.getImageData(0, 0, width, height);
-        // カラー参照用のピクセル情報
+        // 用于彩色参考像素信息
         var colorData = context.getImageData(0, 0, width, height).data;
 
-        // フィルタを適用, グレースケール, ぼかし, エッジ検出
+        // 应用过滤器，灰阶，模糊，边缘检测
         Filter.grayscaleFilterR(imageData);
         Filter.convolutionFilterR(blur, imageData, blur.length);
         Filter.convolutionFilterR(edge, imageData);
 
-        // エッジ上のポイントを検出
+        // 检测在边缘上的点
         var temp = getEdgePoint(imageData);
-        // ログ表示用に記憶しておく
+        // 存储显示日志
         var detectionNum = temp.length;
 
         var points = [];
@@ -285,7 +285,7 @@
 
         var t, p0, p1, p2, cx, cy;
 
-        // 三角形を塗る
+        // 涂料三角形
         for (ilen = triangles.length, i = 0; i < ilen; i++) {
             t = triangles[i];
             p0 = t.nodes[0]; p1 = t.nodes[1]; p2 = t.nodes[2];
@@ -296,7 +296,7 @@
             context.lineTo(p2.x, p2.y);
             context.lineTo(p0.x, p0.y);
 
-            // 重心を取得してその座標の色で三角形を塗りつぶす
+            // 填写的坐标的颜色的三角形来获得重心
             cx = (p0.x + p1.x + p2.x) * 0.33333;
             cy = (p0.y + p1.y + p2.y) * 0.33333;
 
@@ -308,7 +308,7 @@
 
         image.src = canvas.toDataURL('image/png');
 
-        // ログを表示
+        // 查看日志
         generateTime = new Date().getTime() - generateTime;
         console.log(
             'Generate completed ' + generateTime + 'ms, ' +
@@ -322,11 +322,11 @@
     }
 
     /**
-     * エッジを判定してポイントを取得する
+     * 为了得到积分来确定边缘
      *
-     * @param imageData エッジを検出するソースの ImageData
-     * @return エッジ上にランダムに分布したポイントの配列
-     * @see EDGE_DETECT_VALUE エッジと判定する 3x3 の明度の平均値
+     * @param imageData 用于检测的边缘の ImageData源
+     * @return 点的序列随机分布在边缘
+     * @see EDGE_DETECT_VALUE 边缘检测する 3x3 の明度の平均値
      */
     function getEdgePoint(imageData) {
         var width  = imageData.width;
@@ -372,7 +372,7 @@
     var Filter = {
 
         /**
-         * グレイスケールフィルタ, ソース用なので 1 チャンネル (Red) のみに
+         * 灰度滤波器，不仅因为它是为源1通道（红色）
          */
         grayscaleFilterR: function (imageData) {
             var width  = imageData.width | 0;
@@ -400,7 +400,7 @@
         },
 
         /**
-         * 畳み込みフィルタ, ソース用なので 1 チャンネル (Red) のみに
+         * 卷积滤波器，不仅因为它是为源1通道（红色）
          *
          * @see http://jsdo.it/akm2/iMsL
          */
@@ -408,7 +408,7 @@
             matrix  = matrix.slice();
             divisor = divisor || 1;
 
-            // 割る数を行列に適用する
+            // 申请除以矩阵数
             var divscalar = divisor ? 1 / divisor : 0;
             var k, len;
             if (divscalar !== 1) {
@@ -419,7 +419,7 @@
 
             var data = imageData.data;
 
-            // 参照用にオリジナルをコピー, グレースケールなので Red チャンネルのみ
+            // 原来的副本，以供参考，红色通道仅仅是因为灰度
             len = data.length >> 2;
             var copy = new Uint8Array(len);
             for (i = 0; i < len; i++) copy[i] = data[i << 2];
@@ -451,8 +451,7 @@
 
                                 if (
                                     sx >= 0 && sx < width &&
-                                    (v = matrix[(col + range) + kstep]) // 値が 0 ならスキップ
-                                ) {
+                                    (v = matrix[(col + range) + kstep]) // 如果该值为0,则跳过                                ) {
                                     r += copy[sx + jstep] * v;
                                 }
                             }
@@ -534,10 +533,10 @@
             this.nodes = [p0, p1, p2];
             this.edges = [new Edge(p0, p1), new Edge(p1, p2), new Edge(p2, p0)];
 
-            // 今回は id は使用しない
+            // 这次不使用id
             this.id = null;
 
-            // この三角形の外接円を作成する
+            // 创建三角形的外接圆
 
             var circle = this.circle = new Object();
 
@@ -604,28 +603,28 @@
                     for (ilen = triangles.length, i = 0; i < ilen; i++) {
                         t = triangles[i];
 
-                        // 座標が三角形の外接円に含まれるか調べる
+                        // 检查坐标是否被包括在三角形的外接圆
                         circle  = t.circle;
                         dx = circle.x - x;
                         dy = circle.y - y;
                         distSq = dx * dx + dy * dy;
 
                         if (distSq < circle.radiusSq) {
-                            // 含まれる場合三角形の辺を保存
+                            // 减的情况下三角形中包含的侧面
                             edges.push(t.edges[0], t.edges[1], t.edges[2]);
                         } else {
-                            // 含まれない場合は持ち越し
+                            // 如果不包括残留
                             temps.push(t);
                         }
                     }
 
                     polygon = [];
 
-                    // 辺の重複をチェック, 重複する場合は削除する
+                    // 检查重复的一面，如果你要复制被删除
                     edgesLoop: for (ilen = edges.length, i = 0; i < ilen; i++) {
                         edge = edges[i];
 
-                        // 辺を比較して重複していれば削除
+                        // 如果重复的边缘比较删除
                         for (jlen = polygon.length, j = 0; j < jlen; j++) {
                             if (edge.eq(polygon[j])) {
                                 polygon.splice(j, 1);
@@ -674,8 +673,8 @@
 
 
     /**
-     * デバッグ用 log 関数, log.limit(number) で出力数を制限
-     * 進捗の表示は通常の console.log
+     * 调试用 log 功能, log.limit(number) で出力数を制限
+     * 进度の表示は通常の console.log
      */
     //var log=function(a){var b=0;var c=0;var d=function(){if(b){if(c>b)return;c++}a.console.log.apply(console,arguments)};d.limit=function(a){b=a};return d}(window)
 
